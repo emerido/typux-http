@@ -1,0 +1,16 @@
+{
+  "name": "typux-http",
+  "version": "0.0.1",
+  "description": "HTTP plugin for typux",
+  "main": "lib/index.js",
+  "repository": "git@github.com:emerido/typux-http.git",
+  "author": "Aleksey Shvorak <dr.emerido@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typux": "^0.0.5",
+    "whatwg-fetch": "^2.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^2.1.5"
+  }
+}
