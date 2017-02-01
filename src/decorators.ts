@@ -5,8 +5,10 @@ const HTTP = Symbol('typux.http');
 export enum HttpMethod
 {
     GET,
-    POST,
     PUT,
+    HEAD,
+    POST,
+    PATCH,
     DELETE,
     OPTIONS
 }

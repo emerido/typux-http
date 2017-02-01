@@ -14,13 +14,36 @@ export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middlewa
     return store => next => action => {
         if (action.data && hasHttpOptions(action.data)) {
             let options = getHttpOptions(action.data);
-            let promise = fetch(options.url, {
-                method : HttpMethod[options.method].toUpperCase()
+
+            let endpoint = templateUrl(options.url, action.data);
+            let payload = options.method == HttpMethod.POST || options.method == HttpMethod.PUT
+                ? new FormData()
+                : null;
+
+            Object.keys(action.data).forEach(key => {
+                // TODO : Check property options
+                payload && payload.append(key, action.data[key]);
             });
 
-            promise.catch(x => console.log('Http Error', x));
+            let request = new Request(endpoint, {
+                method : HttpMethod[options.method].toUpperCase(),
+                body : payload
+            });
+
+            let promise = fetch(request)
+                .catch(x => console.log('Http Error', x))
+                ;
         }
         next(action)
     }
 
+}
+
+function templateUrl(url : string, data : any) {
+    return url.replace(/\{(.+?)\}/g, function (_, match) {
+        if (data.hasOwnProperty(match)) {
+            return data[match];
+        }
+        return _;
+    });
 }

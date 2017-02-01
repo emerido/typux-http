@@ -6,10 +6,12 @@ function typuxHttpMiddleware(options) {
         if (action.data && decorators_1.hasHttpOptions(action.data)) {
             var options_1 = decorators_1.getHttpOptions(action.data);
             var endpoint = templateUrl(options_1.url, action.data);
-            var payload_1 = new FormData();
+            var payload_1 = options_1.method == decorators_1.HttpMethod.POST || options_1.method == decorators_1.HttpMethod.PUT
+                ? new FormData()
+                : null;
             Object.keys(action.data).forEach(function (key) {
                 // TODO : Check property options
-                payload_1.append(key, action.data[key]);
+                payload_1 && payload_1.append(key, action.data[key]);
             });
             var request = new Request(endpoint, {
                 method: decorators_1.HttpMethod[options_1.method].toUpperCase(),
