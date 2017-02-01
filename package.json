@@ -7,6 +7,8 @@
   "author": "Aleksey Shvorak <dr.emerido@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/whatwg-fetch": "^0.0.33",
+    "redux": "^3.6.0",
     "typux": "^0.0.5",
     "whatwg-fetch": "^2.0.2"
   },
