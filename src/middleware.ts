@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
-import {hasHttpOptions} from "./decorators";
+import {hasHttpOptions, getHttpOptions, HttpMethod} from "./decorators";
 
 export interface HttpMiddlewareOptions
 {
@@ -13,8 +13,12 @@ export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middlewa
 
     return store => next => action => {
         if (action.data && hasHttpOptions(action.data)) {
-            // TODO : Add requests
-            console.log(action);
+            let options = getHttpOptions(action.data);
+            let promise = fetch(options.url, {
+                method : HttpMethod[options.method].toUpperCase()
+            });
+
+            promise.catch(x => console.log('Http Error', x));
         }
         next(action)
     }
