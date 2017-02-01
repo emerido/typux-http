@@ -38,7 +38,7 @@ export function hasHttpOptions(message : Object) : boolean {
 export function getHttpOptions(target) : HttpOptions
 {
     let info = metadata.getClassInfo(typeof target === 'function' ? target : target.constructor);
-    if (info.hasAttribute(HTTP)) {
+    if (false === info.hasAttribute(HTTP)) {
         throw new Error(`Class ${info.name} doesn\'t have http options`);
     }
     return info.getAttribute(HTTP);
