@@ -16,7 +16,7 @@ export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middlewa
             let options = getHttpOptions(action.data);
 
             let endpoint = templateUrl(options.url, action.data);
-            let payload = options.method == HttpMethod.POST || options.method == HttpMethod.PUT
+            let payload = options.method === HttpMethod.POST || options.method === HttpMethod.PUT
                 ? new FormData()
                 : null;
 
