@@ -72,6 +72,11 @@ export function HttpParam(place : HttpOptionPlace, name? : string) : PropertyDec
     }
 }
 
+export function Ignore() : PropertyDecorator
+{
+    return HttpParam(HttpOptionPlace.Ignore);
+}
+
 export function getHttpProps(message : Object) : any {
     return metadata.getClassInfo(message.constructor).getProperties()
         .filter(x => x.hasAttribute(HTTP_PARAM))

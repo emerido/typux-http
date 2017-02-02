@@ -24,6 +24,7 @@ export declare function Put(url: string): ClassDecorator;
 export declare function Post(url: string): ClassDecorator;
 export declare function Delete(url: string): ClassDecorator;
 export declare function HttpParam(place: HttpOptionPlace, name?: string): PropertyDecorator;
+export declare function Ignore(): PropertyDecorator;
 export declare function getHttpProps(message: Object): any;
 /**
  * Returns `true` if http options exists in message instance
