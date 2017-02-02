@@ -2,11 +2,20 @@ import 'whatwg-fetch';
 import {Middleware} from "redux";
 import {hasHttpOptions, getHttpOptions, HttpMethod} from "./decorators";
 
+
+interface IInterceptor
+{
+
+    onError : () => void;
+    onRequest : (request : Request) => void;
+    onResponse : (response : Response) => void;
+
+}
+
 export interface HttpMiddlewareOptions
 {
 
 }
-
 
 export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middleware
 {
