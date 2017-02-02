@@ -1,5 +1,12 @@
+/// <reference types="whatwg-fetch" />
 import 'whatwg-fetch';
 import { Middleware } from "redux";
-export interface HttpMiddlewareOptions {
+export declare function typuxHttpMiddleware(options?: IHttpMiddlewareOptions): Middleware;
+export interface IInterceptor {
+    onError?: () => void;
+    onRequest?: (request: Request) => void;
+    onResponse?: (response: Response) => void;
 }
-export declare function typuxHttpMiddleware(options?: HttpMiddlewareOptions): Middleware;
+export interface IHttpMiddlewareOptions {
+    interceptors?: IInterceptor[];
+}

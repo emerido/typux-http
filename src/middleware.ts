@@ -1,44 +1,43 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
-import {hasHttpOptions, getHttpOptions, HttpMethod} from "./decorators";
+
+import {formatUrl, composeBody, composeQuery} from "./helpers";
+import {hasHttpOptions, getHttpOptions, HttpMethod, getHttpProps} from "./decorators";
 
 
-interface IInterceptor
+export function typuxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
 {
-
-    onError : () => void;
-    onRequest : (request : Request) => void;
-    onResponse : (response : Response) => void;
-
-}
-
-export interface HttpMiddlewareOptions
-{
-
-}
-
-export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middleware
-{
-
     return store => next => action => {
         if (action.data && hasHttpOptions(action.data)) {
+            let params = getHttpProps(action.data);
             let options = getHttpOptions(action.data);
 
-            let endpoint = templateUrl(options.url, action.data);
-            let payload = options.method === HttpMethod.POST || options.method === HttpMethod.PUT
-                ? new FormData()
+            let body = options.hasBody()
+                ? composeBody(action.data, params)
                 : null;
 
-            Object.keys(action.data).forEach(key => {
-                // TODO : Check property options
-                payload && payload.append(key, action.data[key]);
-            });
+            let url = formatUrl(options.url, action.data);
+            let query = composeQuery(action.data, params);
 
-            let request = new Request(endpoint, {
+            if (query && query.length) {
+                url += url.indexOf('?') == -1
+                    ? '?' + query
+                    : '&' + query
+            }
+
+            let payload = options.hasBody() ? new FormData() : null;
+            if (payload && body.length) {
+                body.forEach(pair => {
+                    payload.append(pair[0], pair[1]);
+                })
+            }
+
+            let request = new Request(url, {
                 method : HttpMethod[options.method].toUpperCase(),
                 body : payload
             });
 
+            // TODO
             let promise = fetch(request)
                 .catch(x => console.log('Http Error', x))
                 ;
@@ -48,11 +47,19 @@ export function typuxHttpMiddleware(options? : HttpMiddlewareOptions) : Middlewa
 
 }
 
-function templateUrl(url : string, data : any) {
-    return url.replace(/\{(.+?)\}/g, function (_, match) {
-        if (data.hasOwnProperty(match)) {
-            return data[match];
-        }
-        return _;
-    });
+export interface IInterceptor
+{
+
+    onError? : () => void;
+    onRequest? : (request : Request) => void;
+    onResponse? : (response : Response) => void;
+
+}
+
+
+export interface IHttpMiddlewareOptions
+{
+
+    interceptors? : IInterceptor[];
+
 }
