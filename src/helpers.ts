@@ -27,12 +27,14 @@ export function formatQuery(data : any, prefix? : string) : string {
 
 export function composeBody(data : any, props : any[]) : any[]
 {
-    return Object.keys(data).map(key => {
-        let prop = props.find(x => x.name == key);
-        if (prop == null || prop.type === HttpOptionPlace.Body) {
-            return [key, data[key]];
-        }
-    });
+    return Object.keys(data)
+        .map(key => {
+            let prop = props.find(x => x.name == key);
+            if (prop == null || prop.type === HttpOptionPlace.Body) {
+                return [key, data[key]];
+            }
+        })
+        .filter(x => x != null);
 }
 
 export function composeQuery(data : any, props : PropertyInfo[]) : string
