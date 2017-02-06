@@ -1,7 +1,7 @@
-import {metadata, PropertyInfo} from "typux";
+import {metadata} from "typux";
 
-const HTTP = Symbol('typux.http');
-const HTTP_PARAM = Symbol('typux.http.param');
+export const HTTP = Symbol('typux.http');
+export const HTTP_PARAM = Symbol('typux.http.param');
 
 export enum HttpMethod
 {
@@ -75,6 +75,16 @@ export function HttpParam(place : HttpOptionPlace, name? : string) : PropertyDec
 export function Ignore() : PropertyDecorator
 {
     return HttpParam(HttpOptionPlace.Ignore);
+}
+
+export function Body() : PropertyDecorator
+{
+    return HttpParam(HttpOptionPlace.Body);
+}
+
+export function Query() : PropertyDecorator
+{
+    return HttpParam(HttpOptionPlace.Query);
 }
 
 export function getHttpProps(message : Object) : any {

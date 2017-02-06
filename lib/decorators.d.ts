@@ -1,3 +1,5 @@
+export declare const HTTP: symbol;
+export declare const HTTP_PARAM: symbol;
 export declare enum HttpMethod {
     GET = 0,
     PUT = 1,
@@ -25,6 +27,8 @@ export declare function Post(url: string): ClassDecorator;
 export declare function Delete(url: string): ClassDecorator;
 export declare function HttpParam(place: HttpOptionPlace, name?: string): PropertyDecorator;
 export declare function Ignore(): PropertyDecorator;
+export declare function Body(): PropertyDecorator;
+export declare function Query(): PropertyDecorator;
 export declare function getHttpProps(message: Object): any;
 /**
  * Returns `true` if http options exists in message instance
