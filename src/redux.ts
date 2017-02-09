@@ -1,24 +1,19 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
-import {HttpMethod} from "./enums";
 
-import {formatUrl, composeBody, composeQuery} from "./helpers";
-import {hasHttpOptions, getHttpProps, getHttpOptions} from "./methods";
+import {hasHttpOptions} from "./attrs";
+import {RequestModel} from "./model";
 
 
-export function typuxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
+export function reduxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
 {
     return store => next => action => {
         if (action.data && hasHttpOptions(action.data)) {
-            let params = getHttpProps(action.data);
-            let options = getHttpOptions(action.data);
+            let builder = new RequestModel(action.data);
 
-            let body = options.hasBody()
-                ? composeBody(action.data, params)
-                : null;
-
-            let url = formatUrl(options.url, action.data);
-            let query = composeQuery(action.data, params);
+            let url = builder.url;
+            let body = builder.body;
+            let query = builder.queryString;
 
             if (query && query.length) {
                 url += url.indexOf('?') == -1
@@ -26,7 +21,7 @@ export function typuxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middlew
                     : '&' + query
             }
 
-            let payload = options.hasBody() ? new FormData() : null;
+            let payload = builder.options.hasBody() ? new FormData() : null;
             if (payload && body.length) {
                 body.forEach(pair => {
                     payload.append(pair[0], pair[1]);
@@ -34,7 +29,7 @@ export function typuxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middlew
             }
 
             let request = new Request(url, {
-                method : HttpMethod[options.method].toUpperCase(),
+                method : builder.method,
                 body : payload
             });
 

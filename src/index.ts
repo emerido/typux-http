@@ -1,3 +1,3 @@
-export * from './methods';
-export * from './decorators';
-export * from './middleware';
+export * from './attrs';
+export * from './model';
+export * from './redux';
