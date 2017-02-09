@@ -16,20 +16,3 @@ export declare function HttpParam(place: HttpOptionPlace, name?: string): Proper
 export declare function Ignore(): PropertyDecorator;
 export declare function Body(): PropertyDecorator;
 export declare function Query(): PropertyDecorator;
-export declare function getHttpProps(message: Object): any;
-/**
- * Returns `true` if http options exists in message instance
- *
- * @public
- * @param {Object} message Instance of message
- * @returns {boolean}
- */
-export declare function hasHttpOptions(message: Object): boolean;
-/**
- * Returns http options
- *
- * @public
- * @param {Function|Object} target
- * @returns {HttpOptions}
- */
-export declare function getHttpOptions(target: any): HttpOptions;
