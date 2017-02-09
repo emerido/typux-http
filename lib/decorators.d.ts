@@ -1,19 +1,6 @@
+import { HttpMethod, HttpOptionPlace } from "./enums";
 export declare const HTTP: symbol;
 export declare const HTTP_PARAM: symbol;
-export declare enum HttpMethod {
-    GET = 0,
-    PUT = 1,
-    HEAD = 2,
-    POST = 3,
-    PATCH = 4,
-    DELETE = 5,
-    OPTIONS = 6,
-}
-export declare enum HttpOptionPlace {
-    Ignore = 0,
-    Query = 1,
-    Body = 2,
-}
 export declare class HttpOptions {
     url: string;
     method: HttpMethod;

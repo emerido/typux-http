@@ -1,25 +1,9 @@
 import {metadata} from "typux";
+import {HttpMethod, HttpOptionPlace} from "./enums";
 
 export const HTTP = Symbol('typux.http');
 export const HTTP_PARAM = Symbol('typux.http.param');
 
-export enum HttpMethod
-{
-    GET,
-    PUT,
-    HEAD,
-    POST,
-    PATCH,
-    DELETE,
-    OPTIONS
-}
-
-export enum HttpOptionPlace
-{
-    Ignore,
-    Query,
-    Body
-}
 
 export class HttpOptions
 {
@@ -88,7 +72,7 @@ export function Query() : PropertyDecorator
 }
 
 export function getHttpProps(message : Object) : any {
-    return metadata.getClassInfo(message.constructor).getProperties()
+    return metadata.getClassInfo(message).getProperties()
         .filter(x => x.hasAttribute(HTTP_PARAM))
         .map(x => ({
             name : x.name,
