@@ -1,8 +1,9 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
+import {HttpMethod} from "./enums";
 
 import {formatUrl, composeBody, composeQuery} from "./helpers";
-import {hasHttpOptions, getHttpOptions, HttpMethod, getHttpProps} from "./decorators";
+import {hasHttpOptions, getHttpProps, getHttpOptions} from "./methods";
 
 
 export function typuxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
