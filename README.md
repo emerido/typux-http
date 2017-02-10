@@ -42,6 +42,43 @@ export class UserInfoGet
 ```
 
 
+#### Receiving response
+
+```ts
+@HttpGet('/api/user/{id}')
+@HttpReceive(UserInfo, NotFound)
+export class UserInfoGet
+{
+
+    @Ignore() // <- ignore for query string (optional)
+    public id : number;
+    
+    constructor(id : number)
+    {
+        this.id = id;
+    }
+
+}
+
+@HttpResponse(404 /** Response code */)
+export class NotFound
+{
+
+}
+
+@HttpResponse(200 /** Response code */)
+export class UserInfo
+{
+
+    ...
+    public id : number;
+    ...
+}
+
+// dispatch(new UserInfoGet(1)) -> GET /api/user/1 -> dispatch(new UserInfo(/** values fron response */));
+```
+
+
 ### Use with redux
 
 Add reduxHttpMiddleware into applyMiddleware
