@@ -6,6 +6,7 @@ import {RequestAttribute, ResponseAttribute} from "./model";
 
 export const HTTP_PARAM = Symbol('typux.http.param');
 export const HTTP_REQUEST = Symbol('typux.http.request');
+export const HTTP_RECEIVE = Symbol('typux.http.receive');
 export const HTTP_RESPONSE = Symbol('typux.http.response');
 
 //endregion
@@ -36,6 +37,15 @@ export function HttpDelete(url : string) : ClassDecorator {
 //endregion
 
 //region Response decorators
+export function HttpReceive(...messages : any[]) : ClassDecorator
+{
+    return target => {
+        metadata.getClassInfo(target)
+            .setAttribute(HTTP_RECEIVE, messages)
+        ;
+    }
+}
+
 export function HttpResponse(code : number) : ClassDecorator
 {
     return function (target) {
