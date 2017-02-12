@@ -1,5 +1,6 @@
-import {HttpOptions, getHttpOptions, getHttpProps} from "./attrs";
-import {HttpOptionPlace} from "./enums";
+import {getHttpOptions, getHttpProps} from "./attrs";
+import {HttpMethod, HttpOptionPlace} from "./enums";
+import {formatQuery, formatUrl} from "./utils";
 
 export class RequestModel
 {
@@ -8,7 +9,7 @@ export class RequestModel
 
     public readonly payload : any;
 
-    public readonly options : HttpOptions;
+    public readonly options : RequestAttribute;
 
     private _query : any = {};
     private _body : any = {};
@@ -60,43 +61,35 @@ export class RequestModel
 
 }
 
-/**
- * Formats template url
- *
- * @param {string} url
- * @param {object} data
- *
- * @returns {string}
- */
-export function formatUrl(url : string, data : any) {
-    return url.replace(/\{(.+?)\}/g, function (_, match) {
-        if (data.hasOwnProperty(match)) {
-            return data[match];
-        }
-        return _;
-    });
+export class RequestAttribute
+{
+
+    public url : string;
+
+    public method : HttpMethod;
+
+    public hasBody() : boolean {
+        return this.method
+            && this.method === HttpMethod.POST
+            || this.method === HttpMethod.PUT
+            ;
+    }
+
+    public setEndpoint(url : string, method : HttpMethod) {
+        this.url = url;
+        this.method = method;
+    }
+
+    public get methodName()
+    {
+        return HttpMethod[this.method].toUpperCase();
+    }
+
 }
 
-/**
- * Formats query object
- *
- * @param {object} data
- * @param {string?} prefix
- *
- * @returns {string}
- */
-export function formatQuery(data : any, prefix? : string) : string {
-    let parts = [],
-        prop;
+export class ResponseAttribute
+{
 
-    for(prop in data) {
-        if (data.hasOwnProperty(prop) === false) {
-            continue
-        }
-        let key = prefix ? prefix + "[" + prop + "]" : prop, value = data[prop];
-        parts.push((value !== null && typeof value === "object") ?
-            formatQuery(value, key) :
-            encodeURIComponent(key) + "=" + encodeURIComponent(value));
-    }
-    return parts.join("&");
+    public code : number;
+
 }

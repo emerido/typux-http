@@ -1,14 +1,14 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
 
-import {hasHttpOptions} from "./attrs";
+import {isHttpRequest} from "./attrs";
 import {RequestModel} from "./model";
 
 
 export function reduxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
 {
     return store => next => action => {
-        if (action.data && hasHttpOptions(action.data)) {
+        if (action.data && isHttpRequest(action.data)) {
             let builder = new RequestModel(action.data);
 
             let url = builder.url;

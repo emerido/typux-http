@@ -1,8 +1,8 @@
-import { HttpOptions } from "./attrs";
+import { HttpMethod } from "./enums";
 export declare class RequestModel {
     readonly message: any;
     readonly payload: any;
-    readonly options: HttpOptions;
+    readonly options: RequestAttribute;
     private _query;
     private _body;
     constructor(message: any);
@@ -13,21 +13,13 @@ export declare class RequestModel {
     readonly body: any;
     readonly url: string;
 }
-/**
- * Formats template url
- *
- * @param {string} url
- * @param {object} data
- *
- * @returns {string}
- */
-export declare function formatUrl(url: string, data: any): string;
-/**
- * Formats query object
- *
- * @param {object} data
- * @param {string?} prefix
- *
- * @returns {string}
- */
-export declare function formatQuery(data: any, prefix?: string): string;
+export declare class RequestAttribute {
+    url: string;
+    method: HttpMethod;
+    hasBody(): boolean;
+    setEndpoint(url: string, method: HttpMethod): void;
+    readonly methodName: string;
+}
+export declare class ResponseAttribute {
+    code: number;
+}

@@ -1,3 +1,3 @@
 export * from './attrs';
-export * from './model';
+export * from './enums';
 export * from './redux';

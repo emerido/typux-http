@@ -1,41 +1,19 @@
 import {metadata} from "typux";
-
 import {HttpMethod, HttpOptionPlace} from "./enums";
+import {RequestAttribute, ResponseAttribute} from "./model";
 
-export const HTTP = Symbol('typux.http');
+//region Symbols
+
 export const HTTP_PARAM = Symbol('typux.http.param');
+export const HTTP_REQUEST = Symbol('typux.http.request');
+export const HTTP_RESPONSE = Symbol('typux.http.response');
 
-export class HttpOptions
-{
+//endregion
 
-    public url : string;
-
-    public method : HttpMethod;
-
-    public hasBody() : boolean {
-        return this.method
-            && this.method === HttpMethod.POST
-            || this.method === HttpMethod.PUT
-        ;
-    }
-
-    public setEndpoint(url : string, method : HttpMethod) {
-        this.url = url;
-        this.method = method;
-    }
-
-    public get methodName()
-    {
-        return HttpMethod[this.method].toUpperCase();
-    }
-
-}
-
-
-
+//region Request decorators
 export function Http(url : string, method : HttpMethod = HttpMethod.GET) : ClassDecorator {
     return function (target) {
-        ensureHttpOptions(target).setEndpoint(url, method);
+        ensureRequestAttribute(target).setEndpoint(url, method);
     }
 }
 
@@ -55,18 +33,25 @@ export function HttpDelete(url : string) : ClassDecorator {
     return Http(url, HttpMethod.DELETE)
 }
 
+//endregion
+
+//region Response decorators
+export function HttpResponse(code : number) : ClassDecorator
+{
+    return function (target) {
+        ensureResponseAttribute(target).code = code;
+    }
+}
+//endregion
+
+//region Request params decorators
+
 export function HttpParam(place : HttpOptionPlace, name? : string) : PropertyDecorator {
     return function (target: Object, property: string) {
         metadata.definePropertyAttribute(target, property, HTTP_PARAM, place)
     }
 }
 
-export function HttpResponse(code : number) : ClassDecorator
-{
-    return function (target) {
-
-    }
-}
 
 export function Ignore() : PropertyDecorator
 {
@@ -83,8 +68,13 @@ export function Query() : PropertyDecorator
     return HttpParam(HttpOptionPlace.Query);
 }
 
+//endregion
 
-
+/**
+ * Returns http params for request message
+ * @param {Object} message
+ * @returns {[{name: (string|symbol), type: any}]}
+ */
 export function getHttpProps(message : Object) : any {
     return metadata.getClassInfo(message).getProperties()
         .filter(x => x.hasAttribute(HTTP_PARAM))
@@ -102,8 +92,19 @@ export function getHttpProps(message : Object) : any {
  * @param {Object} message Instance of message
  * @returns {boolean}
  */
-export function hasHttpOptions(message : Object) : boolean {
-    return metadata.getClassInfo(message).hasAttribute(HTTP);
+export function isHttpRequest(message : Object) : boolean {
+    return metadata.getClassInfo(message).hasAttribute(HTTP_REQUEST);
+}
+
+/**
+ * Returns `true` if message is http response
+ *
+ * @public
+ * @param {Object} message
+ * @returns {boolean}
+ */
+export function isHttpResponse(message : Object) {
+    return metadata.getClassInfo(message).hasAttribute(HTTP_RESPONSE);
 }
 
 /**
@@ -111,15 +112,15 @@ export function hasHttpOptions(message : Object) : boolean {
  *
  * @public
  * @param {Function|Object} target
- * @returns {HttpOptions}
+ * @returns {RequestAttribute}
  */
-export function getHttpOptions(target) : HttpOptions
+export function getHttpOptions(target) : RequestAttribute
 {
     let info = metadata.getClassInfo(target);
-    if (false === info.hasAttribute(HTTP)) {
+    if (false === info.hasAttribute(HTTP_REQUEST)) {
         throw new Error(`Class ${info.name} doesn\'t have http options`);
     }
-    return info.getAttribute(HTTP);
+    return info.getAttribute(HTTP_REQUEST);
 }
 
 /**
@@ -127,12 +128,26 @@ export function getHttpOptions(target) : HttpOptions
  *
  * @private
  * @param {Function|Object} target
- * @returns {HttpOptions}
+ * @returns {RequestAttribute}
  */
-export function ensureHttpOptions(target) : HttpOptions {
+function ensureRequestAttribute(target) : RequestAttribute {
     let info = metadata.getClassInfo(target);
-    if (info.hasAttribute(HTTP) === false) {
-        info.setAttribute(HTTP, new HttpOptions());
+    if (info.hasAttribute(HTTP_REQUEST) === false) {
+        info.setAttribute(HTTP_REQUEST, new RequestAttribute());
     }
-    return info.getAttribute(HTTP);
+    return info.getAttribute(HTTP_REQUEST);
+}
+
+/**
+ * Returns http response attribute instance
+ *
+ * @param {Object} target
+ * @returns {ResponseAttribute}
+ */
+function ensureResponseAttribute(target) : ResponseAttribute {
+    let info = metadata.getClassInfo(target);
+    if (info.hasAttribute(HTTP_RESPONSE) === false) {
+        info.setAttribute(HTTP_RESPONSE, new ResponseAttribute());
+    }
+    return info.getAttribute(HTTP_RESPONSE);
 }
