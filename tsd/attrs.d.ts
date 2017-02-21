@@ -36,7 +36,7 @@ export declare function isHttpRequest(message: Object): boolean;
  * @param {Object} message
  * @returns {boolean}
  */
-export declare function isHttpResponse(message: Object): boolean;
+export declare function isHttpResponse(message: Object): any;
 /**
  * Returns http options
  *

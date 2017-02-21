@@ -1,4 +1,4 @@
-import {metadata} from "typux";
+import {reflect} from "typux";
 import {HttpMethod, HttpOptionPlace} from "./enums";
 import {RequestAttribute, ResponseAttribute} from "./model";
 
@@ -40,7 +40,7 @@ export function HttpDelete(url : string) : ClassDecorator {
 export function HttpReceive(...messages : any[]) : ClassDecorator
 {
     return target => {
-        metadata.getClassInfo(target)
+        reflect.getClassInfo(target)
             .setAttribute(HTTP_RECEIVE, messages)
         ;
     }
@@ -58,7 +58,7 @@ export function HttpResponse(code : number) : ClassDecorator
 
 export function HttpParam(place : HttpOptionPlace, name? : string) : PropertyDecorator {
     return function (target: Object, property: string) {
-        metadata.definePropertyAttribute(target, property, HTTP_PARAM, place)
+        reflect.definePropertyAttribute(target, property, HTTP_PARAM, place)
     }
 }
 
@@ -86,7 +86,7 @@ export function Query() : PropertyDecorator
  * @returns {[{name: (string|symbol), type: any}]}
  */
 export function getHttpProps(message : Object) : any {
-    return metadata.getClassInfo(message).getProperties()
+    return reflect.getClassInfo(message).getProperties()
         .filter(x => x.hasAttribute(HTTP_PARAM))
         .map(x => ({
             name : x.name,
@@ -103,7 +103,7 @@ export function getHttpProps(message : Object) : any {
  * @returns {boolean}
  */
 export function isHttpRequest(message : Object) : boolean {
-    return metadata.getClassInfo(message).hasAttribute(HTTP_REQUEST);
+    return reflect.getClassInfo(message).hasAttribute(HTTP_REQUEST);
 }
 
 /**
@@ -114,7 +114,7 @@ export function isHttpRequest(message : Object) : boolean {
  * @returns {boolean}
  */
 export function isHttpResponse(message : Object) {
-    return metadata.getClassInfo(message).hasAttribute(HTTP_RESPONSE);
+    return reflect.getClassInfo(message).hasAttribute(HTTP_RESPONSE);
 }
 
 /**
@@ -126,7 +126,7 @@ export function isHttpResponse(message : Object) {
  */
 export function getHttpOptions(target) : RequestAttribute
 {
-    let info = metadata.getClassInfo(target);
+    let info = reflect.getClassInfo(target);
     if (false === info.hasAttribute(HTTP_REQUEST)) {
         throw new Error(`Class ${info.name} doesn\'t have http options`);
     }
@@ -141,7 +141,7 @@ export function getHttpOptions(target) : RequestAttribute
  * @returns {RequestAttribute}
  */
 function ensureRequestAttribute(target) : RequestAttribute {
-    let info = metadata.getClassInfo(target);
+    let info = reflect.getClassInfo(target);
     if (info.hasAttribute(HTTP_REQUEST) === false) {
         info.setAttribute(HTTP_REQUEST, new RequestAttribute());
     }
@@ -155,7 +155,7 @@ function ensureRequestAttribute(target) : RequestAttribute {
  * @returns {ResponseAttribute}
  */
 function ensureResponseAttribute(target) : ResponseAttribute {
-    let info = metadata.getClassInfo(target);
+    let info = reflect.getClassInfo(target);
     if (info.hasAttribute(HTTP_RESPONSE) === false) {
         info.setAttribute(HTTP_RESPONSE, new ResponseAttribute());
     }

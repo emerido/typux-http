@@ -3,14 +3,14 @@
   "version": "0.0.9",
   "description": "HTTP plugin for typux",
   "main": "out/index.js",
-  "types": "out/index.d.ts",
+  "types": "tsd/index.d.ts",
   "repository": "git@github.com:emerido/typux-http.git",
   "author": "Aleksey Shvorak <dr.emerido@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@types/whatwg-fetch": "^0.0.33",
     "redux": "^3.6.0",
-    "typux": "^0.0.7",
+    "typux": "^0.1.2",
     "whatwg-fetch": "^2.0.2"
   },
   "devDependencies": {

@@ -40,7 +40,7 @@ function HttpReceive() {
         messages[_i] = arguments[_i];
     }
     return function (target) {
-        typux_1.metadata.getClassInfo(target)
+        typux_1.reflect.getClassInfo(target)
             .setAttribute(exports.HTTP_RECEIVE, messages);
     };
 }
@@ -55,7 +55,7 @@ exports.HttpResponse = HttpResponse;
 //region Request params decorators
 function HttpParam(place, name) {
     return function (target, property) {
-        typux_1.metadata.definePropertyAttribute(target, property, exports.HTTP_PARAM, place);
+        typux_1.reflect.definePropertyAttribute(target, property, exports.HTTP_PARAM, place);
     };
 }
 exports.HttpParam = HttpParam;
@@ -78,7 +78,7 @@ exports.Query = Query;
  * @returns {[{name: (string|symbol), type: any}]}
  */
 function getHttpProps(message) {
-    return typux_1.metadata.getClassInfo(message).getProperties()
+    return typux_1.reflect.getClassInfo(message).getProperties()
         .filter(function (x) { return x.hasAttribute(exports.HTTP_PARAM); })
         .map(function (x) { return ({
         name: x.name,
@@ -94,7 +94,7 @@ exports.getHttpProps = getHttpProps;
  * @returns {boolean}
  */
 function isHttpRequest(message) {
-    return typux_1.metadata.getClassInfo(message).hasAttribute(exports.HTTP_REQUEST);
+    return typux_1.reflect.getClassInfo(message).hasAttribute(exports.HTTP_REQUEST);
 }
 exports.isHttpRequest = isHttpRequest;
 /**
@@ -105,7 +105,7 @@ exports.isHttpRequest = isHttpRequest;
  * @returns {boolean}
  */
 function isHttpResponse(message) {
-    return typux_1.metadata.getClassInfo(message).hasAttribute(exports.HTTP_RESPONSE);
+    return typux_1.reflect.getClassInfo(message).hasAttribute(exports.HTTP_RESPONSE);
 }
 exports.isHttpResponse = isHttpResponse;
 /**
@@ -116,7 +116,7 @@ exports.isHttpResponse = isHttpResponse;
  * @returns {RequestAttribute}
  */
 function getHttpOptions(target) {
-    var info = typux_1.metadata.getClassInfo(target);
+    var info = typux_1.reflect.getClassInfo(target);
     if (false === info.hasAttribute(exports.HTTP_REQUEST)) {
         throw new Error("Class " + info.name + " doesn't have http options");
     }
@@ -131,7 +131,7 @@ exports.getHttpOptions = getHttpOptions;
  * @returns {RequestAttribute}
  */
 function ensureRequestAttribute(target) {
-    var info = typux_1.metadata.getClassInfo(target);
+    var info = typux_1.reflect.getClassInfo(target);
     if (info.hasAttribute(exports.HTTP_REQUEST) === false) {
         info.setAttribute(exports.HTTP_REQUEST, new model_1.RequestAttribute());
     }
@@ -144,7 +144,7 @@ function ensureRequestAttribute(target) {
  * @returns {ResponseAttribute}
  */
 function ensureResponseAttribute(target) {
-    var info = typux_1.metadata.getClassInfo(target);
+    var info = typux_1.reflect.getClassInfo(target);
     if (info.hasAttribute(exports.HTTP_RESPONSE) === false) {
         info.setAttribute(exports.HTTP_RESPONSE, new model_1.ResponseAttribute());
     }
