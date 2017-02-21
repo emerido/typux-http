@@ -1,95 +1,60 @@
 "use strict";
-var attrs_1 = require("./attrs");
 var enums_1 = require("./enums");
+var typux_1 = require("typux");
 var utils_1 = require("./utils");
-var RequestModel = (function () {
-    function RequestModel(message) {
-        this._query = {};
-        this._body = {};
-        this.message = message;
-        this.options = attrs_1.getHttpOptions(message);
-        this.payload = attrs_1.getHttpProps(message);
-        this.preparePayload();
+var Request = (function () {
+    function Request() {
+        this.body = {};
+        this.query = {};
+        this.headers = {};
     }
-    RequestModel.prototype.preparePayload = function () {
-        var _this = this;
-        Object.keys(this.message)
-            .map(function (key) { return _this.payload.find(function (x) { return x.name == key; }); })
-            .filter(function (prop) { return prop !== null; })
-            .forEach(function (prop) {
-            switch (prop.type) {
-                case enums_1.HttpOptionPlace.Body:
-                    _this._body[prop.name] = _this.message[prop.name];
-                    break;
-                case enums_1.HttpOptionPlace.Query:
-                    _this._query[prop.name] = _this.message[prop.name];
-                    break;
-            }
-        });
-    };
-    Object.defineProperty(RequestModel.prototype, "queryString", {
-        get: function () {
-            return utils_1.formatQuery(this._query);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RequestModel.prototype, "query", {
-        get: function () {
-            return this._query;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RequestModel.prototype, "method", {
-        get: function () {
-            return this.options.methodName;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RequestModel.prototype, "body", {
-        get: function () {
-            return this._body;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(RequestModel.prototype, "url", {
-        get: function () {
-            return utils_1.formatUrl(this.options.url, this.message);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return RequestModel;
+    return Request;
 }());
-exports.RequestModel = RequestModel;
-var RequestAttribute = (function () {
-    function RequestAttribute() {
+exports.Request = Request;
+var Response = (function () {
+    function Response() {
     }
-    RequestAttribute.prototype.hasBody = function () {
-        return this.method
-            && this.method === enums_1.HttpMethod.POST
-            || this.method === enums_1.HttpMethod.PUT;
-    };
-    RequestAttribute.prototype.setEndpoint = function (url, method) {
+    return Response;
+}());
+exports.Response = Response;
+var HttpRequestAttribute = (function () {
+    function HttpRequestAttribute(url, method) {
         this.url = url;
         this.method = method;
-    };
-    Object.defineProperty(RequestAttribute.prototype, "methodName", {
-        get: function () {
-            return enums_1.HttpMethod[this.method].toUpperCase();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return RequestAttribute;
-}());
-exports.RequestAttribute = RequestAttribute;
-var ResponseAttribute = (function () {
-    function ResponseAttribute() {
     }
-    return ResponseAttribute;
+    HttpRequestAttribute.prototype.compose = function (request, data) {
+        var parameters = typux_1.reflect.getClassInfo(data).getProperties()
+            .filter(function (x) { return x.hasAttribute(HttpParameterAttribute); });
+        var routeParams = parameters
+            .filter(function (x) { return x.getAttribute(HttpParameterAttribute).type == enums_1.HttpParameterType.Path; })
+            .reduce(function (dict, param) {
+            // TODO : Added getter for param name
+            dict[param.name] = data[param.name];
+            return dict;
+        }, {});
+        var queryParams = parameters
+            .filter(function (x) { return x.getAttribute(HttpParameterAttribute).type == enums_1.HttpParameterType.Query; })
+            .forEach(function (x) {
+            request.query[x.name] = data[x.name];
+        });
+        request.url = utils_1.formatUrl(this.url, routeParams);
+        return request;
+    };
+    return HttpRequestAttribute;
 }());
-exports.ResponseAttribute = ResponseAttribute;
+exports.HttpRequestAttribute = HttpRequestAttribute;
+var HttpResponseAttribute = (function () {
+    function HttpResponseAttribute(code) {
+        this.code = code;
+    }
+    return HttpResponseAttribute;
+}());
+exports.HttpResponseAttribute = HttpResponseAttribute;
+var HttpParameterAttribute = (function () {
+    function HttpParameterAttribute(type, alias) {
+        this.type = type;
+        this.alias = alias;
+    }
+    return HttpParameterAttribute;
+}());
+exports.HttpParameterAttribute = HttpParameterAttribute;

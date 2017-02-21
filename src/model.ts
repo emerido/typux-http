@@ -1,95 +1,81 @@
-import {getHttpOptions, getHttpProps} from "./attrs";
-import {HttpMethod, HttpOptionPlace} from "./enums";
-import {formatQuery, formatUrl} from "./utils";
+import {HttpMethod, HttpParameterType} from "./enums";
+import {Dictionary, reflect} from "typux";
+import {formatUrl} from "./utils";
 
-export class RequestModel
+export class Request
 {
-
-    public readonly message : any;
-
-    public readonly payload : any;
-
-    public readonly options : RequestAttribute;
-
-    private _query : any = {};
-    private _body : any = {};
-
-    constructor(message : any) {
-        this.message = message;
-        this.options = getHttpOptions(message);
-        this.payload = getHttpProps(message);
-
-        this.preparePayload();
-    }
-
-    private preparePayload()
-    {
-        Object.keys(this.message)
-            .map(key => this.payload.find(x => x.name == key))
-            .filter(prop => prop !== null)
-            .forEach(prop => {
-                switch (prop.type) {
-                    case HttpOptionPlace.Body:
-                        this._body[prop.name] = this.message[prop.name];
-                        break;
-                    case HttpOptionPlace.Query:
-                        this._query[prop.name] = this.message[prop.name];
-                        break;
-                }
-            })
-    }
-
-    public get queryString() {
-        return formatQuery(this._query);
-    }
-
-    public get query() {
-        return this._query;
-    }
-
-    public get method() {
-        return this.options.methodName;
-    }
-
-    public get body() {
-        return this._body;
-    }
-
-    public get url() {
-        return formatUrl(this.options.url, this.message);
-    }
-
+    public url : string;
+    public body : Dictionary<any> = {};
+    public query : Dictionary<any> = {};
+    public method : string;
+    public headers : Dictionary<string> = {};
 }
 
-export class RequestAttribute
+export class Response
 {
+    public status : number;
+    public content : string;
+    public headers : Dictionary<string>;
+    public data? : any;
+}
 
+export class HttpRequestAttribute
+{
     public url : string;
-
     public method : HttpMethod;
 
-    public hasBody() : boolean {
-        return this.method
-            && this.method === HttpMethod.POST
-            || this.method === HttpMethod.PUT
-            ;
-    }
-
-    public setEndpoint(url : string, method : HttpMethod) {
+    constructor(url: string, method: HttpMethod) {
         this.url = url;
         this.method = method;
     }
 
-    public get methodName()
+    public compose(request : Request, data : any) : Request
     {
-        return HttpMethod[this.method].toUpperCase();
+        let parameters = reflect.getClassInfo(data).getProperties()
+            .filter(x => x.hasAttribute(HttpParameterAttribute));
+
+        let routeParams = parameters
+            .filter(x => x.getAttribute(HttpParameterAttribute).type == HttpParameterType.Path)
+            .reduce((dict, param) => {
+                // TODO : Added getter for param name
+                dict[param.name] = data[param.name];
+                return dict;
+            }, {});
+
+
+        let queryParams = parameters
+            .filter(x => x.getAttribute(HttpParameterAttribute).type == HttpParameterType.Query)
+            .forEach(x => {
+                request.query[x.name] = data[x.name];
+            });
+
+        request.url = formatUrl(this.url, routeParams);
+
+        return request;
     }
 
 }
 
-export class ResponseAttribute
+export class HttpResponseAttribute
 {
 
     public code : number;
+
+    constructor(code: number) {
+        this.code = code;
+    }
+
+}
+
+export class HttpParameterAttribute
+{
+
+    public type : HttpParameterType;
+    public alias? : string;
+
+    constructor(type: HttpParameterType, alias?: string) {
+        this.type = type;
+        this.alias = alias;
+    }
 
 }

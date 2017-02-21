@@ -1,25 +1,30 @@
-import { HttpMethod } from "./enums";
-export declare class RequestModel {
-    readonly message: any;
-    readonly payload: any;
-    readonly options: RequestAttribute;
-    private _query;
-    private _body;
-    constructor(message: any);
-    private preparePayload();
-    readonly queryString: string;
-    readonly query: any;
-    readonly method: string;
-    readonly body: any;
-    readonly url: string;
+import { HttpMethod, HttpParameterType } from "./enums";
+import { Dictionary } from "typux";
+export declare class Request {
+    url: string;
+    body: Dictionary<any>;
+    query: Dictionary<any>;
+    method: string;
+    headers: Dictionary<string>;
 }
-export declare class RequestAttribute {
+export declare class Response {
+    status: number;
+    content: string;
+    headers: Dictionary<string>;
+    data?: any;
+}
+export declare class HttpRequestAttribute {
     url: string;
     method: HttpMethod;
-    hasBody(): boolean;
-    setEndpoint(url: string, method: HttpMethod): void;
-    readonly methodName: string;
+    constructor(url: string, method: HttpMethod);
+    compose(request: Request, data: any): Request;
 }
-export declare class ResponseAttribute {
+export declare class HttpResponseAttribute {
     code: number;
+    constructor(code: number);
+}
+export declare class HttpParameterAttribute {
+    type: HttpParameterType;
+    alias?: string;
+    constructor(type: HttpParameterType, alias?: string);
 }

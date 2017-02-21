@@ -1,3 +1,9 @@
+import {reflect} from "typux";
+import {HttpRequestAttribute} from "./model";
+
+export function isHttpRequest(data : any) : boolean {
+    return reflect.getClassInfo(data).hasAttribute(HttpRequestAttribute);
+}
 
 /**
  * Formats template url

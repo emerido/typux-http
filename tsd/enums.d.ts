@@ -7,8 +7,9 @@ export declare enum HttpMethod {
     DELETE = 5,
     OPTIONS = 6,
 }
-export declare enum HttpOptionPlace {
+export declare enum HttpParameterType {
     Ignore = 0,
     Query = 1,
     Body = 2,
+    Path = 3,
 }

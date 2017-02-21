@@ -1,3 +1,4 @@
+export declare function isHttpRequest(data: any): boolean;
 /**
  * Formats template url
  *

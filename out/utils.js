@@ -1,4 +1,10 @@
 "use strict";
+var typux_1 = require("typux");
+var model_1 = require("./model");
+function isHttpRequest(data) {
+    return typux_1.reflect.getClassInfo(data).hasAttribute(model_1.HttpRequestAttribute);
+}
+exports.isHttpRequest = isHttpRequest;
 /**
  * Formats template url
  *

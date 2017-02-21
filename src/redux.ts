@@ -1,63 +1,23 @@
 import 'whatwg-fetch';
 import {Middleware} from "redux";
+import {isHttpRequest} from "./utils";
+import {HttpRequestAttribute, Request as TypuxRequest} from "./model";
+import {reflect} from "typux";
 
-import {isHttpRequest} from "./attrs";
-import {RequestModel} from "./model";
 
-
-export function reduxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middleware
+export function reduxHttpMiddleware() : Middleware
 {
     return store => next => action => {
         if (action.data && isHttpRequest(action.data)) {
-            let builder = new RequestModel(action.data);
+            let requestAttributes = reflect.getClassInfo(action.data)
+                .getAttributes(HttpRequestAttribute);
 
-            let url = builder.url;
-            let body = builder.body;
-            let query = builder.queryString;
+            let requestModel = requestAttributes
+                .reduce((r, a) => a.compose(r, action.data), new TypuxRequest());
 
-            if (query && query.length) {
-                url += url.indexOf('?') == -1
-                    ? '?' + query
-                    : '&' + query
-            }
-
-            let payload = builder.options.hasBody() ? new FormData() : null;
-            if (payload && body.length) {
-                body.forEach(pair => {
-                    payload.append(pair[0], pair[1]);
-                })
-            }
-
-            let request = new Request(url, {
-                method : builder.method,
-                body : payload
-            });
-
-            // let receive =
-
-            // TODO
-            let promise = fetch(request)
-                .catch(x => console.log('Http Error', x))
-                ;
+            console.log(requestModel);
         }
         next(action)
     }
-
-}
-
-export interface IInterceptor
-{
-
-    onError? : () => void;
-    onRequest? : (request : Request) => void;
-    onResponse? : (response : Response) => void;
-
-}
-
-
-export interface IHttpMiddlewareOptions
-{
-
-    interceptors? : IInterceptor[];
 
 }

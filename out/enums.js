@@ -9,9 +9,10 @@ var HttpMethod;
     HttpMethod[HttpMethod["DELETE"] = 5] = "DELETE";
     HttpMethod[HttpMethod["OPTIONS"] = 6] = "OPTIONS";
 })(HttpMethod = exports.HttpMethod || (exports.HttpMethod = {}));
-var HttpOptionPlace;
-(function (HttpOptionPlace) {
-    HttpOptionPlace[HttpOptionPlace["Ignore"] = 0] = "Ignore";
-    HttpOptionPlace[HttpOptionPlace["Query"] = 1] = "Query";
-    HttpOptionPlace[HttpOptionPlace["Body"] = 2] = "Body";
-})(HttpOptionPlace = exports.HttpOptionPlace || (exports.HttpOptionPlace = {}));
+var HttpParameterType;
+(function (HttpParameterType) {
+    HttpParameterType[HttpParameterType["Ignore"] = 0] = "Ignore";
+    HttpParameterType[HttpParameterType["Query"] = 1] = "Query";
+    HttpParameterType[HttpParameterType["Body"] = 2] = "Body";
+    HttpParameterType[HttpParameterType["Path"] = 3] = "Path";
+})(HttpParameterType = exports.HttpParameterType || (exports.HttpParameterType = {}));

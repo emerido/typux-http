@@ -9,9 +9,10 @@ export enum HttpMethod
     OPTIONS
 }
 
-export enum HttpOptionPlace
+export enum HttpParameterType
 {
     Ignore,
     Query,
-    Body
+    Body,
+    Path
 }
