@@ -33,6 +33,8 @@ export function reduxHttpMiddleware(options? : IHttpMiddlewareOptions) : Middlew
                 body : payload
             });
 
+            // let receive =
+
             // TODO
             let promise = fetch(request)
                 .catch(x => console.log('Http Error', x))

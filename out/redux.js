@@ -24,6 +24,7 @@ function reduxHttpMiddleware(options) {
                 method: builder.method,
                 body: payload_1
             });
+            // let receive =
             // TODO
             var promise = fetch(request)
                 .catch(function (x) { return console.log('Http Error', x); });
