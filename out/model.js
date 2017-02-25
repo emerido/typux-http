@@ -1,11 +1,11 @@
 "use strict";
 var enums_1 = require("./enums");
 var typux_1 = require("typux");
-var utils_1 = require("./utils");
 var Request = (function () {
     function Request() {
         this.body = {};
         this.query = {};
+        this.params = {};
         this.headers = {};
     }
     return Request;
@@ -13,31 +13,34 @@ var Request = (function () {
 exports.Request = Request;
 var Response = (function () {
     function Response() {
+        this.headers = {};
     }
     return Response;
 }());
 exports.Response = Response;
 var HttpRequestAttribute = (function () {
-    function HttpRequestAttribute(url, method) {
-        this.url = url;
+    function HttpRequestAttribute(endpoint, method) {
+        this.params = {};
+        this.query = {};
+        this.body = {};
+        this.pattern = endpoint;
         this.method = method;
     }
-    HttpRequestAttribute.prototype.compose = function (request, data) {
-        var parameters = typux_1.reflect.getClassInfo(data).getProperties()
+    HttpRequestAttribute.prototype.onRequest = function (request, message) {
+        request.url = this.pattern;
+        request.method = enums_1.HttpMethod[this.method].toUpperCase();
+        var parameters = typux_1.reflect.getClassInfo(message).getProperties()
             .filter(function (x) { return x.hasAttribute(HttpParameterAttribute); });
-        var routeParams = parameters
+        parameters
             .filter(function (x) { return x.getAttribute(HttpParameterAttribute).type == enums_1.HttpParameterType.Path; })
-            .reduce(function (dict, param) {
-            // TODO : Added getter for param name
-            dict[param.name] = data[param.name];
-            return dict;
-        }, {});
-        var queryParams = parameters
+            .forEach(function (x) {
+            request.params[x.name] = message[x.name];
+        });
+        parameters
             .filter(function (x) { return x.getAttribute(HttpParameterAttribute).type == enums_1.HttpParameterType.Query; })
             .forEach(function (x) {
-            request.query[x.name] = data[x.name];
+            request.query[x.name] = message[x.name];
         });
-        request.url = utils_1.formatUrl(this.url, routeParams);
         return request;
     };
     return HttpRequestAttribute;

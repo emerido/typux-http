@@ -2,9 +2,10 @@ import { HttpMethod, HttpParameterType } from "./enums";
 import { Dictionary } from "typux";
 export declare class Request {
     url: string;
+    method: string;
     body: Dictionary<any>;
     query: Dictionary<any>;
-    method: string;
+    params: Dictionary<any>;
     headers: Dictionary<string>;
 }
 export declare class Response {
@@ -14,10 +15,13 @@ export declare class Response {
     data?: any;
 }
 export declare class HttpRequestAttribute {
-    url: string;
+    pattern: string;
     method: HttpMethod;
-    constructor(url: string, method: HttpMethod);
-    compose(request: Request, data: any): Request;
+    params: Dictionary<any>;
+    query: Dictionary<any>;
+    body: Dictionary<any>;
+    constructor(endpoint: string, method: HttpMethod);
+    onRequest(request: Request, message: any): Request;
 }
 export declare class HttpResponseAttribute {
     code: number;

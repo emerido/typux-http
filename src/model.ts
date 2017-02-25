@@ -1,55 +1,63 @@
 import {HttpMethod, HttpParameterType} from "./enums";
 import {Dictionary, reflect} from "typux";
-import {formatUrl} from "./utils";
 
 export class Request
 {
+
     public url : string;
+
+    public method : string;
+
     public body : Dictionary<any> = {};
     public query : Dictionary<any> = {};
-    public method : string;
+    public params : Dictionary<any> = {};
     public headers : Dictionary<string> = {};
+
 }
 
 export class Response
 {
     public status : number;
     public content : string;
-    public headers : Dictionary<string>;
+    public headers : Dictionary<string> = {};
     public data? : any;
+
 }
 
 export class HttpRequestAttribute
 {
-    public url : string;
+
+    public pattern : string;
     public method : HttpMethod;
 
-    constructor(url: string, method: HttpMethod) {
-        this.url = url;
+    public params : Dictionary<any> = {};
+    public query : Dictionary<any> = {};
+    public body : Dictionary<any> = {};
+
+    constructor(endpoint: string, method: HttpMethod) {
+        this.pattern = endpoint;
         this.method = method;
     }
 
-    public compose(request : Request, data : any) : Request
+    public onRequest(request : Request, message : any) : Request
     {
-        let parameters = reflect.getClassInfo(data).getProperties()
+        request.url = this.pattern;
+        request.method = HttpMethod[this.method].toUpperCase();
+
+        let parameters = reflect.getClassInfo(message).getProperties()
             .filter(x => x.hasAttribute(HttpParameterAttribute));
 
-        let routeParams = parameters
+        parameters
             .filter(x => x.getAttribute(HttpParameterAttribute).type == HttpParameterType.Path)
-            .reduce((dict, param) => {
-                // TODO : Added getter for param name
-                dict[param.name] = data[param.name];
-                return dict;
-            }, {});
-
-
-        let queryParams = parameters
-            .filter(x => x.getAttribute(HttpParameterAttribute).type == HttpParameterType.Query)
             .forEach(x => {
-                request.query[x.name] = data[x.name];
+                request.params[x.name] = message[x.name];
             });
 
-        request.url = formatUrl(this.url, routeParams);
+        parameters
+            .filter(x => x.getAttribute(HttpParameterAttribute).type == HttpParameterType.Query)
+            .forEach(x => {
+                request.query[x.name] = message[x.name];
+            });
 
         return request;
     }

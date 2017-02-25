@@ -6,7 +6,7 @@ export function isHttpRequest(data : any) : boolean {
 }
 
 /**
- * Formats template url
+ * Formats template pattern
  *
  * @param {string} url
  * @param {object} data

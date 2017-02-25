@@ -6,7 +6,7 @@ function isHttpRequest(data) {
 }
 exports.isHttpRequest = isHttpRequest;
 /**
- * Formats template url
+ * Formats template pattern
  *
  * @param {string} url
  * @param {object} data
