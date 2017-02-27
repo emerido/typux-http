@@ -1,9 +1,11 @@
+import { Constructable } from "typux";
 import { HttpMethod, HttpParameterType } from "./enums";
 export declare const HttpRequest: (url: string, method: HttpMethod) => ClassDecorator;
 export declare const HttpGet: (url: string) => ClassDecorator;
 export declare const HttpPut: (url: string) => ClassDecorator;
 export declare const HttpPost: (url: string) => ClassDecorator;
 export declare const HttpDelete: (url: string) => ClassDecorator;
+export declare const HttpReceive: (...messages: Constructable<any>[]) => ClassDecorator & PropertyDecorator & MethodDecorator & ParameterDecorator;
 export declare const HttpResponse: (code: number) => ClassDecorator;
 export declare const HttpParameter: (type: HttpParameterType, alias?: string) => PropertyDecorator;
 export declare const Path: (alias?: string) => PropertyDecorator;

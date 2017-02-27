@@ -1,5 +1,6 @@
 import 'isomorphic-fetch';
 
+import {formatQuery, formatUrl} from "./utils";
 import {Request as RequestModel, Response as ResponseModel} from "./model";
 
 export class Manager
@@ -8,12 +9,22 @@ export class Manager
     public readonly config : ManagerConfig;
 
     constructor(config? : ManagerConfig) {
-        this.config = config;
+        this.config = config || {};
     }
 
-    execute(model : RequestModel) : PromiseLike<ResponseModel>
+    private get urlBuilder() {
+        return this.config.urlBuilder || (this.config.urlBuilder = new UrlBuilder());
+    }
+
+    execute(model : RequestModel) : Promise<ResponseModel>
     {
-        let request = new Request(model.url, {
+        // TODO : Add typux-model peer dependency
+        // TODO : Add url params transform
+        // TODO : Add response action dispatch
+
+        let url = this.urlBuilder.build(model);
+
+        let request = new Request(url, {
             method : model.method,
             // body : model.body TODO: convert body
         });
@@ -23,6 +34,7 @@ export class Manager
         return fetch(request)
             .then(x => {
                 response.status = x.status;
+                // Copy headers
                 x.headers.forEach((key, status) =>
                     response.headers[status] = x.headers.get(key)
                 );
@@ -33,9 +45,11 @@ export class Manager
                 return response;
             })
             .catch(x => {
+
+                // TODO : Separate local error handling
                 response.status = x.status || 500;
-                response.data = x.text || x.message;
-                return response;
+                response.data = x;
+                throw response;
             })
         ;
 
@@ -43,7 +57,20 @@ export class Manager
 
 }
 
-export interface ManagerConfig
+export class UrlBuilder
 {
 
+    build(request : RequestModel) : string {
+
+        let query = formatQuery(request.query);
+        let path = formatUrl(request.url, request.params);
+
+        return path + (path.indexOf('?') > -1 ? '&' : '?') + query;
+    }
+
+}
+
+export interface ManagerConfig
+{
+    urlBuilder? : UrlBuilder;
 }

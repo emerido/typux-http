@@ -1,5 +1,5 @@
 import { HttpMethod, HttpParameterType } from "./enums";
-import { Dictionary } from "typux";
+import { Constructable, Dictionary } from "typux";
 export declare class Request {
     url: string;
     method: string;
@@ -22,6 +22,10 @@ export declare class HttpRequestAttribute {
     body: Dictionary<any>;
     constructor(endpoint: string, method: HttpMethod);
     onRequest(request: Request, message: any): Request;
+}
+export declare class HttpReceiveAttribute {
+    messages: Constructable<any>[];
+    constructor(messages: Constructable<any>[]);
 }
 export declare class HttpResponseAttribute {
     code: number;

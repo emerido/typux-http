@@ -9,6 +9,13 @@ exports.HttpGet = function (url) { return exports.HttpRequest(url, enums_1.HttpM
 exports.HttpPut = function (url) { return exports.HttpRequest(url, enums_1.HttpMethod.PUT); };
 exports.HttpPost = function (url) { return exports.HttpRequest(url, enums_1.HttpMethod.POST); };
 exports.HttpDelete = function (url) { return exports.HttpRequest(url, enums_1.HttpMethod.DELETE); };
+exports.HttpReceive = function () {
+    var messages = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        messages[_i] = arguments[_i];
+    }
+    return typux_1.Attribute(new model_1.HttpReceiveAttribute(messages));
+};
 exports.HttpResponse = function (code) {
     return typux_1.Attribute(new model_1.HttpResponseAttribute(code));
 };

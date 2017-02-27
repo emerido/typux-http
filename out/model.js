@@ -46,6 +46,13 @@ var HttpRequestAttribute = (function () {
     return HttpRequestAttribute;
 }());
 exports.HttpRequestAttribute = HttpRequestAttribute;
+var HttpReceiveAttribute = (function () {
+    function HttpReceiveAttribute(messages) {
+        this.messages = messages;
+    }
+    return HttpReceiveAttribute;
+}());
+exports.HttpReceiveAttribute = HttpReceiveAttribute;
 var HttpResponseAttribute = (function () {
     function HttpResponseAttribute(code) {
         this.code = code;

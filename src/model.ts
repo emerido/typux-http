@@ -1,5 +1,5 @@
 import {HttpMethod, HttpParameterType} from "./enums";
-import {Dictionary, reflect} from "typux";
+import {Constructable, Dictionary, reflect} from "typux";
 
 export class Request
 {
@@ -23,6 +23,8 @@ export class Response
     public data? : any;
 
 }
+
+
 
 export class HttpRequestAttribute
 {
@@ -60,6 +62,14 @@ export class HttpRequestAttribute
             });
 
         return request;
+    }
+
+}
+
+export class HttpReceiveAttribute
+{
+
+    constructor(public messages : Constructable<any>[]) {
     }
 
 }

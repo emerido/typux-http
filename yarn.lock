@@ -77,9 +77,9 @@ typescript@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.1.5.tgz#6fe9479e00e01855247cea216e7561bafcdbcd4a"
 
-typux@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/typux/-/typux-0.1.2.tgz#7d81c0f4309a9aa24f1c0ded6f9b14b55987dab8"
+typux@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/typux/-/typux-0.1.4.tgz#1ac2c428a515ddb444b057a6e85d94d75c514d7f"
   dependencies:
     "@types/reflect-metadata" "^0.0.5"
     tslib "^1.5.0"
