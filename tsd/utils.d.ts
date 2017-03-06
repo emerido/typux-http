@@ -1,4 +1,5 @@
 export declare function isHttpRequest(data: any): boolean;
+export declare function formatUrl(url: string, data: any): string;
 /**
  * Formats template pattern
  *
@@ -7,7 +8,7 @@ export declare function isHttpRequest(data: any): boolean;
  *
  * @returns {string}
  */
-export declare function formatUrl(url: string, data: any): string;
+export declare function formatPath(url: string, data: any): string;
 /**
  * Formats query object
  *

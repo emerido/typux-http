@@ -1,58 +1,73 @@
 "use strict";
 require("isomorphic-fetch");
-var utils_1 = require("./utils");
+var typux_1 = require("typux");
 var model_1 = require("./model");
+var model_2 = require("./model");
 var Manager = (function () {
     function Manager(config) {
         this.config = config || {};
     }
-    Object.defineProperty(Manager.prototype, "urlBuilder", {
+    Object.defineProperty(Manager.prototype, "requestBuilder", {
         get: function () {
-            return this.config.urlBuilder || (this.config.urlBuilder = new UrlBuilder());
+            return new RequestBuilder();
         },
         enumerable: true,
         configurable: true
     });
-    Manager.prototype.execute = function (model) {
-        // TODO : Add typux-model peer dependency
-        // TODO : Add url params transform
-        // TODO : Add response action dispatch
-        var url = this.urlBuilder.build(model);
-        var request = new Request(url, {
-            method: model.method,
-        });
+    Manager.prototype.execute = function (message) {
+        var info = typux_1.reflect.getClassInfo(message);
+        var request = this.requestBuilder.build(message);
+        var receive = info.getAttributes(model_2.HttpReceiveAttribute)
+            .reduce(function (all, attr) { return all.concat(attr.messages); }, [])
+            .map(function (x) { return typux_1.reflect.getClassInfo(x); })
+            .map(function (x) { return [x.getAttribute(model_1.HttpResponseAttribute), x.type]; });
         var response = new model_1.Response();
-        return fetch(request)
+        function process(response) {
+            var best = receive.find(function (x) { return x[0].code == response.status; });
+            if (best) {
+                return new best[1]();
+            }
+        }
+        return fetch(request.url.toString(), {
+            headers: request.headers,
+            method: request.methodName,
+            body: request.body,
+        })
             .then(function (x) {
+            console.log(x.url);
             response.status = x.status;
-            // Copy headers
-            x.headers.forEach(function (key, status) {
-                return response.headers[status] = x.headers.get(key);
-            });
-            return x.text();
+            response.headers = x.headers;
+            return x;
         })
-            .then(function (x) {
-            response.data = x;
-            return response;
-        })
-            .catch(function (x) {
-            // TODO : Separate local error handling
-            response.status = x.status || 500;
-            response.data = x;
-            throw response;
-        });
+            .then(function (x) { return x.text(); })
+            .then(function (x) { return response.body = new model_1.Body(x); })
+            .then(function (x) { return response; })
+            .then(process);
     };
     return Manager;
 }());
 exports.Manager = Manager;
-var UrlBuilder = (function () {
-    function UrlBuilder() {
+var RequestBuilder = (function () {
+    function RequestBuilder() {
     }
-    UrlBuilder.prototype.build = function (request) {
-        var query = utils_1.formatQuery(request.query);
-        var path = utils_1.formatUrl(request.url, request.params);
-        return path + (path.indexOf('?') > -1 ? '&' : '?') + query;
+    RequestBuilder.prototype.build = function (message) {
+        var info = typux_1.reflect.getClassInfo(message);
+        // Get request attributes
+        var requestAttributes = info
+            .getAttributes(model_2.HttpRequestAttribute);
+        if (requestAttributes.length === 0) {
+            throw new Error('Can\'t execute non request message');
+        }
+        var request = requestAttributes
+            .reduce(function (request, attr) { return attr.onRequest(request, message); }, new model_1.Request());
+        info.getProperties()
+            .filter(function (x) { return x.hasAttribute(model_2.HttpParameterAttribute); })
+            .forEach(function (x) {
+            x.getAttributes(model_2.HttpParameterAttribute)
+                .forEach(function (a) { return a.onRequest(x.name, request, message); });
+        });
+        return request;
     };
-    return UrlBuilder;
+    return RequestBuilder;
 }());
-exports.UrlBuilder = UrlBuilder;
+exports.RequestBuilder = RequestBuilder;

@@ -1,7 +1,8 @@
 import 'isomorphic-fetch';
 
-import {formatQuery, formatUrl} from "./utils";
-import {Request as RequestModel, Response as ResponseModel} from "./model";
+import {Constructable, reflect} from "typux";
+import {Request, Response, Body, HttpResponseAttribute} from "./model";
+import {HttpRequestAttribute, HttpParameterAttribute, HttpReceiveAttribute} from "./model";
 
 export class Manager
 {
@@ -12,65 +13,83 @@ export class Manager
         this.config = config || {};
     }
 
-    private get urlBuilder() {
-        return this.config.urlBuilder || (this.config.urlBuilder = new UrlBuilder());
+    public get requestBuilder() {
+        return new RequestBuilder();
     }
 
-    execute(model : RequestModel) : Promise<ResponseModel>
+    public execute(message : any) : Promise<any>
     {
-        // TODO : Add typux-model peer dependency
-        // TODO : Add url params transform
-        // TODO : Add response action dispatch
+        const info = reflect.getClassInfo(message);
 
-        let url = this.urlBuilder.build(model);
+        const request = this.requestBuilder.build(message);
 
-        let request = new Request(url, {
-            method : model.method,
-            // body : model.body TODO: convert body
-        });
+        const receive = info.getAttributes(HttpReceiveAttribute)
+            .reduce((all, attr) => all.concat(attr.messages), [])
+            .map(x => reflect.getClassInfo(x))
+            .map(x => [x.getAttribute(HttpResponseAttribute), x.type]);
 
-        let response = new ResponseModel();
+        const response = new Response();
 
-        return fetch(request)
+        function process(response : Response) {
+            const best = receive.find(x => x[0].code == response.status);
+            if (best) {
+                return new best[1]();
+            }
+        }
+
+        return fetch(request.url.toString(), {
+            headers: request.headers,
+            method: request.methodName,
+            body: request.body,
+        })
             .then(x => {
+                console.log(x.url);
                 response.status = x.status;
-                // Copy headers
-                x.headers.forEach((key, status) =>
-                    response.headers[status] = x.headers.get(key)
-                );
-                return x.text();
+                response.headers = x.headers;
+                return x;
             })
-            .then(x => {
-                response.data = x;
-                return response;
-            })
-            .catch(x => {
-
-                // TODO : Separate local error handling
-                response.status = x.status || 500;
-                response.data = x;
-                throw response;
-            })
-        ;
-
+            .then(x => x.text())
+            .then(x => response.body = new Body(x))
+            .then(x => response)
+            .then(process)
     }
+
 
 }
 
-export class UrlBuilder
+export class RequestBuilder
 {
 
-    build(request : RequestModel) : string {
+    build(message : any) : Request
+    {
+        const info = reflect.getClassInfo(message);
 
-        let query = formatQuery(request.query);
-        let path = formatUrl(request.url, request.params);
+        // Get request attributes
+        const requestAttributes = info
+            .getAttributes(HttpRequestAttribute);
 
-        return path + (path.indexOf('?') > -1 ? '&' : '?') + query;
+        if (requestAttributes.length === 0) {
+            throw new Error('Can\'t execute non request message');
+        }
+
+        const request = requestAttributes
+            .reduce((request, attr) => attr.onRequest(request, message), new Request()
+            );
+
+        info.getProperties()
+            .filter(x => x.hasAttribute(HttpParameterAttribute))
+            .forEach(x => {
+                x.getAttributes(HttpParameterAttribute)
+                    .forEach(a => a.onRequest(x.name, request, message))
+            })
+        ;
+
+        return request;
     }
 
 }
 
 export interface ManagerConfig
 {
-    urlBuilder? : UrlBuilder;
+
 }

@@ -1,18 +1,7 @@
-import {reduxHttpMiddleware} from "./redux";
-import {FetchPost} from './test/messages';
+import {FetchPost, PostFetched} from './test/messages';
+import {Manager} from "./manager";
 
-const state : any = {
-    dispatch(action) {
-        console.log('Dispatched new action', action);
-    }
-};
-const action = (data : any) : any => ({data});
-
-const middleware = reduxHttpMiddleware()(state)(x => x);
-
-
-
-
-
-middleware(action(new FetchPost(12)));
+const executor = new Manager();
+executor.execute(new FetchPost(1000000))
+    .then(console.log);
 

@@ -5,6 +5,16 @@ export function isHttpRequest(data : any) : boolean {
     return reflect.getClassInfo(data).hasAttribute(HttpRequestAttribute);
 }
 
+export function formatUrl(url : string, data : any) : string {
+    let path = formatPath(url, data);
+    let query = formatQuery(data);
+
+    if (query.length > 0) {
+        path += (path.indexOf('?') > -1 ? '&' : '?') + query;
+    }
+    return path;
+}
+
 /**
  * Formats template pattern
  *
@@ -13,7 +23,7 @@ export function isHttpRequest(data : any) : boolean {
  *
  * @returns {string}
  */
-export function formatUrl(url : string, data : any) {
+export function formatPath(url : string, data : any) {
     return url.replace(/\{(.+?)\}/g, function (_, match) {
         if (data.hasOwnProperty(match)) {
             return data[match];

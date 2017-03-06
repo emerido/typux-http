@@ -5,6 +5,15 @@ function isHttpRequest(data) {
     return typux_1.reflect.getClassInfo(data).hasAttribute(model_1.HttpRequestAttribute);
 }
 exports.isHttpRequest = isHttpRequest;
+function formatUrl(url, data) {
+    var path = formatPath(url, data);
+    var query = formatQuery(data);
+    if (query.length > 0) {
+        path += (path.indexOf('?') > -1 ? '&' : '?') + query;
+    }
+    return path;
+}
+exports.formatUrl = formatUrl;
 /**
  * Formats template pattern
  *
@@ -13,7 +22,7 @@ exports.isHttpRequest = isHttpRequest;
  *
  * @returns {string}
  */
-function formatUrl(url, data) {
+function formatPath(url, data) {
     return url.replace(/\{(.+?)\}/g, function (_, match) {
         if (data.hasOwnProperty(match)) {
             return data[match];
@@ -21,7 +30,7 @@ function formatUrl(url, data) {
         return _;
     });
 }
-exports.formatUrl = formatUrl;
+exports.formatPath = formatPath;
 /**
  * Formats query object
  *

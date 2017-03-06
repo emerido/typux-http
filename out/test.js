@@ -1,11 +1,6 @@
 "use strict";
-var redux_1 = require("./redux");
 var messages_1 = require("./test/messages");
-var state = {
-    dispatch: function (action) {
-        console.log('Dispatched new action', action);
-    }
-};
-var action = function (data) { return ({ data: data }); };
-var middleware = redux_1.reduxHttpMiddleware()(state)(function (x) { return x; });
-middleware(action(new messages_1.FetchPost(12)));
+var manager_1 = require("./manager");
+var executor = new manager_1.Manager();
+executor.execute(new messages_1.FetchPost(1000000))
+    .then(console.log);

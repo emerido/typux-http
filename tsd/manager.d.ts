@@ -1,14 +1,13 @@
 import 'isomorphic-fetch';
-import { Request as RequestModel, Response as ResponseModel } from "./model";
+import { Request } from "./model";
 export declare class Manager {
     readonly config: ManagerConfig;
     constructor(config?: ManagerConfig);
-    private readonly urlBuilder;
-    execute(model: RequestModel): Promise<ResponseModel>;
+    readonly requestBuilder: RequestBuilder;
+    execute(message: any): Promise<any>;
 }
-export declare class UrlBuilder {
-    build(request: RequestModel): string;
+export declare class RequestBuilder {
+    build(message: any): Request;
 }
 export interface ManagerConfig {
-    urlBuilder?: UrlBuilder;
 }
