@@ -44,15 +44,20 @@ export class Url
 export class Body
 {
 
-    // TODO : Specify the types
-    private _content : any = {};
+    private _object : any = {};
+    private _content : string;
 
     constructor(content: string = '') {
         this._content = content;
+        this._object = JSON.parse(this._content || '{}');
     }
 
     public set(name : string, value : any) {
         this._content[name] = value;
+    }
+
+    public json() : any {
+        return this._object;
     }
 
 }

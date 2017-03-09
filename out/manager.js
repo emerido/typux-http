@@ -25,7 +25,8 @@ var Manager = (function () {
         function process(response) {
             var best = receive.find(function (x) { return x[0].code == response.status; });
             if (best) {
-                return new best[1]();
+                // TODO : User typux-model for mapping
+                return Object.assign(new best[1](), response.body.json());
             }
         }
         return fetch(request.url.toString(), {

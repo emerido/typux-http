@@ -36,12 +36,15 @@ exports.Url = Url;
 var Body = (function () {
     function Body(content) {
         if (content === void 0) { content = ''; }
-        // TODO : Specify the types
-        this._content = {};
+        this._object = {};
         this._content = content;
+        this._object = JSON.parse(this._content || '{}');
     }
     Body.prototype.set = function (name, value) {
         this._content[name] = value;
+    };
+    Body.prototype.json = function () {
+        return this._object;
     };
     return Body;
 }());

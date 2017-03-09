@@ -33,7 +33,8 @@ export class Manager
         function process(response : Response) {
             const best = receive.find(x => x[0].code == response.status);
             if (best) {
-                return new best[1]();
+                // TODO : User typux-model for mapping
+                return Object.assign(new best[1](), response.body.json());
             }
         }
 

@@ -12,9 +12,11 @@ export declare class Url {
     toString(): string;
 }
 export declare class Body {
+    private _object;
     private _content;
     constructor(content?: string);
     set(name: string, value: any): void;
+    json(): any;
 }
 export declare class Request {
     private _url;
