@@ -8,7 +8,7 @@ export declare function formatUrl(url: string, data: any): string;
  *
  * @returns {string}
  */
-export declare function formatPath(url: string, data: any): string;
+export declare function formatPath(url: string, data: any): any;
 /**
  * Formats query object
  *

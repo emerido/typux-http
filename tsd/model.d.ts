@@ -1,4 +1,3 @@
-/// <reference types="isomorphic-fetch" />
 import { HttpMethod, HttpParameterType } from "./enums";
 import { Constructable, Dictionary } from "typux";
 export declare class Url {

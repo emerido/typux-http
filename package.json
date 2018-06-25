@@ -7,13 +7,14 @@
   "repository": "git@github.com:emerido/typux-http.git",
   "author": "Aleksey Shvorak <dr.emerido@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "develop" : "tsc --watch"
+  },
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1",
     "redux": "^3.6.0",
     "typux": "^0.1.4"
   },
   "devDependencies": {
-    "@types/isomorphic-fetch": "^0.0.33",
-    "typescript": "^2.1.5"
+    "typescript": "^2.7.2"
   }
 }

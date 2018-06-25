@@ -38,21 +38,22 @@ export class Manager
             }
         }
 
-        return fetch(request.url.toString(), {
-            headers: request.headers,
-            method: request.methodName,
-            body: request.body,
-        })
-            .then(x => {
-                console.log(x.url);
-                response.status = x.status;
-                response.headers = x.headers;
-                return x;
-            })
-            .then(x => x.text())
-            .then(x => response.body = new Body(x))
-            .then(x => response)
-            .then(process)
+        return Promise.resolve();
+        // return fetch(request.url.toString(), {
+        //     headers: request.headers,
+        //     method: request.methodName,
+        //     body: request.body,
+        // })
+        //     .then(x => {
+        //         console.log(x.url);
+        //         response.status = x.status;
+        //         response.headers = x.headers;
+        //         return x;
+        //     })
+        //     .then(x => x.text())
+        //     .then(x => response.body = new Body(x))
+        //     .then(x => response)
+        //     .then(process)
     }
 
 
